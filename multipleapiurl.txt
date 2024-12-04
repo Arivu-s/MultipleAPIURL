@@ -136,3 +136,29 @@ const apiCalls = [
 ---
 
 This solution is highly flexible and ready for real-world scenarios. Let me know if you want additional enhancements like **retry logic** or **loading indicators**!
+
+MAPPING :- 
+// Define the constants
+const mappings = {
+  Trade: "welcome trade",
+  Cash: "This is cash",
+  Payment: "this is payment text",
+  Loan: "this is loan text",
+};
+
+// Function to find the matched text
+const getMatchedText = (input) => {
+  for (const [key, value] of Object.entries(mappings)) {
+    if (value.toLowerCase().includes(input.toLowerCase())) {
+      return `${key}: ${value}`;
+    }
+  }
+  return "No match found!";
+};
+
+// Test the function
+console.log(getMatchedText("trade")); // Output: Trade: welcome trade
+console.log(getMatchedText("cash"));  // Output: Cash: This is cash
+console.log(getMatchedText("loan"));  // Output: Loan: this is loan text
+console.log(getMatchedText("random")); // Output: No match found!
+
