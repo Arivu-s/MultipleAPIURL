@@ -1,0 +1,138 @@
+Here's an optimized version of the code where **multiple API URLs** are used, allowing you to handle calls to different endpoints dynamically. Each URL corresponds to a `POST` request with its payload.
+
+---
+
+### **Code with Multiple URLs**
+```jsx
+import React, { useEffect, useState } from "react";
+
+const MultipleApiCalls = () => {
+  const [responses, setResponses] = useState([]);
+  const [error, setError] = useState(null);
+
+  // Array of API URLs and their respective payloads
+  const apiCalls = [
+    {
+      url: "https://example.com/api/endpoint1",
+      payload: { id: 1, data: "Data for endpoint 1" },
+    },
+    {
+      url: "https://example.com/api/endpoint2",
+      payload: { id: 2, data: "Data for endpoint 2" },
+    },
+    {
+      url: "https://example.com/api/endpoint3",
+      payload: { id: 3, data: "Data for endpoint 3" },
+    },
+  ];
+
+  const fetchMultipleApis = async () => {
+    try {
+      // Map API URLs and payloads to fetch promises
+      const fetchPromises = apiCalls.map(({ url, payload }) =>
+        fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }).then((response) => {
+          if (!response.ok) {
+            throw new Error(`Error at ${url}: ${response.status}`);
+          }
+          return response.json(); // Parse JSON response
+        })
+      );
+
+      // Wait for all requests to complete
+      const results = await Promise.all(fetchPromises);
+      setResponses(results); // Update state with responses
+    } catch (err) {
+      console.error("Error fetching APIs:", err);
+      setError(err.message); // Update state with the error
+    }
+  };
+
+  useEffect(() => {
+    fetchMultipleApis();
+  }, []); // Runs once on component mount
+
+  return (
+    <div>
+      <h1>Multiple API Calls with Different URLs</h1>
+      {error ? (
+        <p style={{ color: "red" }}>Error: {error}</p>
+      ) : (
+        <div>
+          <h2>Responses:</h2>
+          <ul>
+            {responses.map((response, index) => (
+              <li key={index}>{JSON.stringify(response)}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default MultipleApiCalls;
+```
+
+---
+
+### **Key Changes and Features**
+1. **Handling Multiple URLs:**  
+   - The `apiCalls` array contains objects with `url` and `payload` for each API.
+   - Each object specifies the endpoint and corresponding payload.
+
+2. **Dynamic Fetch Requests:**  
+   - The `map` function dynamically creates `fetch` calls for each URL and payload combination.
+
+3. **Error Identification:**  
+   - Errors specify which URL caused the issue for easier debugging.
+
+4. **Flexibility:**  
+   - Easily extendable by adding more objects to the `apiCalls` array.
+   - Supports multiple endpoints with different data structures.
+
+---
+
+### **Why This Approach is Effective**
+- **Scalability:** Handles any number of unique URLs and payloads without code duplication.
+- **Parallelization:** Using `Promise.all` ensures all requests are executed concurrently for maximum speed.
+- **Error Clarity:** Identifies the specific API call that failed, making debugging straightforward.
+
+---
+
+### Example Input and Output
+#### **Input:**
+```javascript
+const apiCalls = [
+  {
+    url: "https://example.com/api/endpoint1",
+    payload: { id: 1, data: "Data for endpoint 1" },
+  },
+  {
+    url: "https://example.com/api/endpoint2",
+    payload: { id: 2, data: "Data for endpoint 2" },
+  },
+  {
+    url: "https://example.com/api/endpoint3",
+    payload: { id: 3, data: "Data for endpoint 3" },
+  },
+];
+```
+
+#### **Output:**
+```json
+[
+  { "message": "Response from endpoint 1" },
+  { "message": "Response from endpoint 2" },
+  { "message": "Response from endpoint 3" }
+]
+```
+
+---
+
+This solution is highly flexible and ready for real-world scenarios. Let me know if you want additional enhancements like **retry logic** or **loading indicators**!
